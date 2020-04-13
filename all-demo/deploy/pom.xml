@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <artifactId>all-demo</artifactId>
+    <groupId>club.banyuan</groupId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>mall-mgt</artifactId>
+  <dependencies>
+
+  </dependencies>
+  <profiles>
+    <!--开发环境-->
+    <profile>
+      <id>dev</id>
+      <properties>
+        <spring.profiles.active>dev</spring.profiles.active>
+      </properties>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+    </profile>
+    <!--生产环境-->
+    <profile>
+      <id>prod</id>
+      <properties>
+        <start-class>club.banyuan.demo.deploy.DemoApplication</start-class>
+        <spring.profiles.active>prod</spring.profiles.active>
+      </properties>
+    </profile>
+  </profiles>
+  <build>
+    <!-- profile对资源的操作 -->
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <excludes>
+          <exclude>application*.yml</exclude>
+          <exclude>*.properties</exclude>
+          <!--          过滤文件夹-->
+          <exclude>**/</exclude>
+        </excludes>
+      </resource>
+
+      <resource>
+        <directory>src/main/resources/${spring.profiles.active}</directory>
+        <includes>
+          <include>*.properties</include>
+        </includes>
+        <targetPath>${basedir}/target/classes</targetPath>
+      </resource>
+
+      <resource>
+        <directory>src/main/resources</directory>
+        <!-- 是否替换@xx@表示的maven properties属性值 -->
+        <filtering>true</filtering>
+        <includes>
+          <include>application.yml</include>
+          <include>application-${spring.profiles.active}.yml</include>
+        </includes>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.1.0</version>
+        <configuration>
+          <excludes>
+            <exclude>application*.yml</exclude>
+            <exclude>*.properties</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.2-beta-5</version>
+        <configuration>
+          <!--   这个是assembly 所在位置  -->
+          <descriptor>assembly/assembly.xml</descriptor>
+        </configuration>
+
+        <executions>
+          <execution>
+            <id>make-assembly</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+
+</project>
